@@ -1,13 +1,26 @@
-1-click-wordpress
+One-Click WordPress Installer
+By Fotan (www.fotan.net)
+
 =================
 
 A &lt; 20kb file that installs WordPress and it's zillion files, plus sets up your wp-config and downloads plugins and cleans up after itself.  Saves a ton of time.
 
+** USE **
+ - Set up your web space, just like always.
+ - Create a database.
+ - Upload 1-click-wp.php to the folder you want WordPress to live in.
+ - Browse to http://www.whateveryourdomainis.com/1-click-wp.php
+ - Fill in the form
+ - Pick any plugins you want to be installed along with WordPress
+ - Hit the Submit button
+ - Wait about 10 seconds and fill in the WordPress "Install" screen like normal.
+ 
 
-	One-Click WordPress Installer 
-	By Fotan (www.fotan.net)
+
+
+** Versions **	
 	
-	v1.1
+	v1.1 (4/4/2014)
 		- Setup screen now includes a list of the plugins I always seem to want to 
 		  install with check boxes.  Just check the box and the latest version of the 
 		  plugin is downloaded and unzipped in the wp-content/plugins folder.
