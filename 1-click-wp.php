@@ -4,7 +4,14 @@
 	One-Click WordPress Installer 
 	By Fotan (www.fotan.net)
 	
-	v1.1
+	v1.2 (4/29/2014)
+		- Backed out of deleting the license.txt and readme.html files
+		- Added some security "stuff" to htaccess
+		- Added DISALLOW_FILE_EDIT to wp-config.php so file editing from Dashboard is disabled
+		- Added Simple Custom CSS to install list
+		- Added Limit Login Attempts plugin to install list
+		- Added an uploads folder to wp-content
+	v1.1 (4/4/2014)
 		- Setup screen now includes a list of the plugins I always seem to want to 
 		  install with check boxes.  Just check the box and the latest version of the 
 		  plugin is downloaded and unzipped in the wp-content/plugins folder.
@@ -35,6 +42,44 @@
 	All rights reserved.                     
 
 ///////////////////////////////////////////////////////////////////////////*/
+
+// .htaccess stuff that is added later.
+// Just here to make it easy to find and edit.
+$htaccess_stuff = 
+"";
+$htaccess_stuff .= 
+"# Block/Allow access to wp-login.php\n
+# Just toggle allow/deny from all\n
+<files wp-login.php>\n
+order allow,deny\n
+allow from all\n
+</files>\n\n";
+$htaccess_stuff .= 
+"# Don't let anyone access wp-config\n
+<Files wp-config.php>\n
+order allow,deny\n
+deny from all\n
+</Files>\n\n";
+$htaccess_stuff .= 
+"# Don't let anyone access htaccess\n					
+<Files .htaccess>\n
+order allow,deny\n
+deny from all\n
+</Files>\n\n";
+$htaccess_stuff .= 
+"# Block the include-only files.\n
+<IfModule mod_rewrite.c>\n
+RewriteEngine On\n
+RewriteBase /\n
+RewriteRule ^wp-admin/includes/ - [F,L]\n
+RewriteRule !^wp-includes/ - [S=3]\n
+RewriteRule ^wp-includes/[^/]+\.php$ - [F,L]\n
+RewriteRule ^wp-includes/js/tinymce/langs/.+\.php - [F,L]\n
+RewriteRule ^wp-includes/theme-compat/ - [F,L]\n
+</IfModule>\n\n";				
+$htaccess_stuff .= 
+"# Turn off Directory Browsing\n
+Options All -Indexes\n\n";					
 
 function get_plugins($plugin_array) { // Take an array of plugin name slugs and download them from WP
     foreach($plugin_array as $plugin)
@@ -181,7 +226,10 @@ if(isset($_POST["process"]) && $_POST["process"]=="true")
 											  define('FTP_SSL', ".$_POST["ftp_ssl"]."); \n
 												
 											  // Set WP Memory Limit for PHP
-											  define('WP_MEMORY_LIMIT', ".$_POST["memory_limit"]."); \n\n\n
+											  define('WP_MEMORY_LIMIT', ".$_POST["memory_limit"]."); \n\n
+											  
+											  // Disable File Editing from Dashboard
+											  define('DISALLOW_FILE_EDIT', true);\n\n\n
 						", $config);
 						
 						
@@ -199,12 +247,19 @@ if(isset($_POST["process"]) && $_POST["process"]=="true")
 		
 				rename(dirname(__FILE__)."/wp-config-sample.php", dirname(__FILE__)."/wp-config.php");
 				exec("rm -f 1-click-wp.php", $buff3);
-				exec("rm -f license.txt", $buff3);
-				exec("rm -f readme.html", $buff3);
+				//exec("rm -f license.txt", $buff3);
+				//exec("rm -f readme.html", $buff3);
 				
 				// Make a .htaccess file
 				exec("touch .htaccess");
 				exec("chmod 644 .htaccess");
+				$hta = fopen(dirname(__FILE__)."/.htaccess", "w+");
+				fwrite($hta, $htaccess_stuff);
+				fclose($hta);
+				
+				// Make an uploads folder
+				exec("mkdir wp-content/uploads");
+				exec("chmod 644 wp-content/uploads");
 				
 				// Delete the downloaded WP file
 				exec("rm -f *.tar.gz");
@@ -396,9 +451,11 @@ else
             Include Plugins<br />
             <input class='checkbox' type="checkbox" name="plugins_group[]" value="admin-management-xtended">Admin Management Xtended<br />
             <input class='checkbox' type="checkbox" name="plugins_group[]" value="all-in-one-wp-security-and-firewall" />All In One WP Security<br />
-            <input class='checkbox' type="checkbox" name="plugins_group[]" value="configure-smtp" />Configure SMTP<br /> 
+            <input class='checkbox' type="checkbox" name="plugins_group[]" value="configure-smtp" />Configure SMTP<br />
+            <input class='checkbox' type="checkbox" name="plugins_group[]" value="simple-custom-css" />Custom CSS<br />
             <input class='checkbox' type="checkbox" name="plugins_group[]" value="exclude-pages" />Exclude Pages From Navigation<br /> 
             <input class='checkbox' type="checkbox" name="plugins_group[]" value="google-sitemap-generator" />Google XML Sitemaps<br /> 
+            <input class='checkbox' type="checkbox" name="plugins_group[]" value="limit-login-attempts" />Limit Login Attempts<br /> 
             <input class='checkbox' type="checkbox" name="plugins_group[]" value="page-links-to" />Page Links To<br /> 
             <input class='checkbox' type="checkbox" name="plugins_group[]" value="simple-page-ordering" />Simple Page Ordering<br /> 
             <input class='checkbox' type="checkbox" name="plugins_group[]" value="tinymce-advanced" />TinyMCE Advanced<br /> 
