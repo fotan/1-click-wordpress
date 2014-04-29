@@ -20,6 +20,13 @@ A &lt; 20kb file that installs WordPress and it's zillion files, plus sets up yo
 
 ** Versions **	
 	
+	v1.2 (4/29/2014)
+		- Backed out of deleting the license.txt and readme.html files
+		- Added some security "stuff" to .htaccess
+		- Added DISALLOW_FILE_EDIT to wp-config.php so file editing from Dashboard is disabled
+		- Added Simple Custom CSS to install list
+		- Added Limit Login Attempts plugin to install list
+		- Added an uploads folder to wp-content
 	v1.1 (4/4/2014)
 		- Setup screen now includes a list of the plugins I always seem to want to 
 		  install with check boxes.  Just check the box and the latest version of the 
