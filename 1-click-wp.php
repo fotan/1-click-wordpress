@@ -461,6 +461,7 @@ else
             <input class='checkbox' type="checkbox" name="plugins_group[]" value="tinymce-advanced" />TinyMCE Advanced<br /> 
             <input class='checkbox' type="checkbox" name="plugins_group[]" value="wp-blackcheck" />WP-BlackCheck<br /> 
             <input class='checkbox' type="checkbox" name="plugins_group[]" value="wp-slimstat" />WP SlimStat<br /> 
+            <input class='checkbox' type="checkbox" name="plugins_group[]" value="easy-pie-maintenance-mode" />Easy Pie Maintenance Mode<br /> 
             <br /><br />
 
             

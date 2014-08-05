@@ -20,6 +20,8 @@ A &lt; 20kb file that installs WordPress and it's zillion files, plus sets up yo
 
 ** Versions **	
 	
+	v1.2.1 (8/5/2014)
+		- Added Easy Pie Maintenance Mode plugin to auto-install list
 	v1.2 (4/29/2014)
 		- Backed out of deleting the license.txt and readme.html files
 		- Added some security "stuff" to .htaccess
