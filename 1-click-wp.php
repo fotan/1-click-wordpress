@@ -1,14 +1,52 @@
 <?php
 /*///////////////////////////////////////////////////////////////////////////
 	
-	One-Click WordPress Installer (v1.2.1)  
+	One-Click WordPress Installer 
 	By Fotan (www.fotan.net)
+	
+	v1.2.3 (1/23/15
+		- Fixed the WordPress download function.  The original one stopped working with a 302 error. 
+			Decided to make it a little more simple and just used file_get_contents / file_put_contents
+	v1.2.2 (5/16/14)
+		- Added BackWPUp plugin to install list
+		- Added Velvet Blues plugin to install list
+	v1.2.1 (4/30/14)
+		- Fixed permissions on Plugins folder so you can upload plugins rather than just
+		  installing from wordpress.org/plugins
+	v1.2 (4/29/14)
+		- Backed out of deleting the license.txt and readme.html files
+		- Added some security "stuff" to htaccess
+		- Added DISALLOW_FILE_EDIT to wp-config.php so file editing from Dashboard is disabled
+		- Added Simple Custom CSS to install list
+		- Added Limit Login Attempts plugin to install list
+		- Added an uploads folder to wp-content
+	v1.1 (4/30/14)
+		- Setup screen now includes a list of the plugins I always seem to want to 
+		  install with check boxes.  Just check the box and the latest version of the 
+		  plugin is downloaded and unzipped in the wp-content/plugins folder.
+		- To add more plugins to download and unzip, just copy and paste one of hte
+		  ones already there and change the value and text after the input.
+		- After unzipping the plugin file, the .zip file is deleted from the server
+		- Cleaned up the CSS in the form a little.
+	v1.0
+		- Downloads the latest, stable version of WordPress
+		- Displays a form to fill in DB Host, DB User, DB Password
+		- Randomly creates the SALT fields (hidden from view)
+		- Randomly creates the DB Prefix, but lets you change it if you want
+		- Displays a form to fill in FTP Host, FTP User, FTP Password, SSL?  
+		  If properly filled in, you will be able to use one touch installs and updates
+		- Displays a form to set a Memory Limit
+		- Deletes the tar ball of the install package
+		- Deletes license.txt, because it's silly to have
+		- Deletes readme.html, because it's silly to have
+		- Creates .htaccess file and makes it writable to the user (664)
+		- Forwards to instal.php
 	
 	
 	
 	Based on:	
 	EasyWP WordPress Installer v1.2          
-	Copyright Â©2008 - 2010 Michael VanDeMar  
+	Copyright ©2008 - 2010 Michael VanDeMar  
 	http://www.funscripts.net/               
 	All rights reserved.                     
 
@@ -84,58 +122,16 @@ function rand_prefix() { // Random DB Prefix
 } // End Random DB Prefix
 
 function getLatestWP(){
-	$head = "";
+	echo "<h3>Downloading file..</h3><br />";
 
-	$fp = @fsockopen("wordpress.org", 80, $errno, $errstr, 15);
-	if(!$fp){
-		$response[0] = -999;
-		$response[1] = "$errstr ($errno).";
-		$response[2] = 0;
-	}else{
-		stream_set_timeout($fp, 5);
-		$out = "GET /latest.tar.gz HTTP/1.0\r\n";
-		$out .= "Host: wordpress.org\r\n";
-		$out .= "User-agent: One-Click WordPress Installer (http://www.fotan.net/)\r\n";
-		$out .= "Connection: Close\r\n\r\n";
-
-		fwrite($fp, $out);
-		while(!feof($fp)){
-			$head .= fgets($fp, 128);
-		}
-		fclose($fp);
-
-		$tresponse = split("\r\n\r\n",$head);
-		// headers returned
-		$response[0] = $tresponse[0];
-		// content
-		$response[1] = trim(str_replace($tresponse[0], "", $head));
-		//parse out response code
-		preg_match("|.*\s([0-9]*)\s[^\n]*\n.*|Uis", $response[0], $out);
-		if($out[1]!="" && !(is_null($out[1]))){
-			$response[2] = $out[1];
-		}else{
-			$response[2] = 0;
-		}
-		if($response[2]==200){
-			preg_match("/Content-Disposition: attachment; filename=(.*)\n/Ui", $response[0], $fname);
-			if($fname[1]!=""){
-				$fp = fopen(dirname(__FILE__)."/".trim($fname[1]),"a+");
-				if($fp){
-					fwrite($fp, $response[1]);
-					fclose($fp);
-					return trim($fname[1]);
-				}else{
-					die("Failed to create local file: ".trim($fname[1]));
-				}
-			}else{
-				die("Problem parsing filename.");
-			}
-		}else{
-			die("Problem with downloading file, header returned:\n".$response[0]);
-		}
-	}
-} // End Get Latest WP
-
+	$remote_file_contents = file_get_contents('https://wordpress.org/latest.tar.gz');
+	//Get the contents
+	
+	$local_file_path = '';
+	
+	file_put_contents("wordpress.tar.gz", $remote_file_contents);
+	//save the contents of the remote file} // End Get Latest WP
+}
 
 
 
@@ -230,7 +226,10 @@ if(isset($_POST["process"]) && $_POST["process"]=="true")
 				
 				// Make an uploads folder
 				exec("mkdir wp-content/uploads");
-				exec("chmod 644 wp-content/uploads");
+				exec("chmod 755 wp-content/uploads");
+				
+				// Fix permissions on the Plugins folder
+				exec("chmod 755 wp-content/plugins");
 				
 				// Delete the downloaded WP file
 				exec("rm -f *.tar.gz");
@@ -422,6 +421,7 @@ else
             Include Plugins<br />
             <input class='checkbox' type="checkbox" name="plugins_group[]" value="admin-management-xtended">Admin Management Xtended<br />
             <input class='checkbox' type="checkbox" name="plugins_group[]" value="all-in-one-wp-security-and-firewall" />All In One WP Security<br />
+            <input class='checkbox' type="checkbox" name="plugins_group[]" value="backwpup" />Back WP Up<br />
             <input class='checkbox' type="checkbox" name="plugins_group[]" value="configure-smtp" />Configure SMTP<br />
             <input class='checkbox' type="checkbox" name="plugins_group[]" value="simple-custom-css" />Custom CSS<br />
             <input class='checkbox' type="checkbox" name="plugins_group[]" value="exclude-pages" />Exclude Pages From Navigation<br /> 
@@ -429,10 +429,10 @@ else
             <input class='checkbox' type="checkbox" name="plugins_group[]" value="limit-login-attempts" />Limit Login Attempts<br /> 
             <input class='checkbox' type="checkbox" name="plugins_group[]" value="page-links-to" />Page Links To<br /> 
             <input class='checkbox' type="checkbox" name="plugins_group[]" value="simple-page-ordering" />Simple Page Ordering<br /> 
-            <input class='checkbox' type="checkbox" name="plugins_group[]" value="tinymce-advanced" />TinyMCE Advanced<br /> 
+            <input class='checkbox' type="checkbox" name="plugins_group[]" value="tinymce-advanced" />TinyMCE Advanced<br />
+            <input class='checkbox' type="checkbox" name="plugins_group[]" value="velvet-blues-update-urls" />Velvet Blues URL Changer<br /> 
             <input class='checkbox' type="checkbox" name="plugins_group[]" value="wp-blackcheck" />WP-BlackCheck<br /> 
             <input class='checkbox' type="checkbox" name="plugins_group[]" value="wp-slimstat" />WP SlimStat<br /> 
-            <input class='checkbox' type="checkbox" name="plugins_group[]" value="easy-pie-maintenance-mode" />Easy Pie Maintenance Mode<br /> 
             <br /><br />
 
             

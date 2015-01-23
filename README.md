@@ -20,7 +20,10 @@ A &lt; 20kb file that installs WordPress and it's zillion files, plus sets up yo
 
 ** Versions **	
 	
-	v1.2.1 (8/5/2014)
+    v1.2.3 (1/23/15
+    - Fixed the WordPress download function.  The original one stopped working with a 302 error. 
+        Decided to make it a little more simple and just used file_get_contents / file_put_contents
+    v1.2.1 (8/5/2014)
 		- Added Easy Pie Maintenance Mode plugin to auto-install list
 	v1.2 (4/29/2014)
 		- Backed out of deleting the license.txt and readme.html files
