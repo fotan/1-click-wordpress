@@ -1,11 +1,13 @@
 <?php
 /*///////////////////////////////////////////////////////////////////////////
-	
-	One-Click WordPress Installer 
+
+	One-Click WordPress Installer
 	By Fotan (www.fotan.net)
-	
-	v1.2.3 (1/23/15
-		- Fixed the WordPress download function.  The original one stopped working with a 302 error. 
+
+	v1.2.4 (2/8/15)
+		- Changed from the .tar.gz version of WordPress to the .zip version
+	v1.2.3 (1/23/15)
+		- Fixed the WordPress download function.  The original one stopped working with a 302 error.
 			Decided to make it a little more simple and just used file_get_contents / file_put_contents
 	v1.2.2 (5/16/14)
 		- Added BackWPUp plugin to install list
@@ -21,8 +23,8 @@
 		- Added Limit Login Attempts plugin to install list
 		- Added an uploads folder to wp-content
 	v1.1 (4/30/14)
-		- Setup screen now includes a list of the plugins I always seem to want to 
-		  install with check boxes.  Just check the box and the latest version of the 
+		- Setup screen now includes a list of the plugins I always seem to want to
+		  install with check boxes.  Just check the box and the latest version of the
 		  plugin is downloaded and unzipped in the wp-content/plugins folder.
 		- To add more plugins to download and unzip, just copy and paste one of hte
 		  ones already there and change the value and text after the input.
@@ -33,7 +35,7 @@
 		- Displays a form to fill in DB Host, DB User, DB Password
 		- Randomly creates the SALT fields (hidden from view)
 		- Randomly creates the DB Prefix, but lets you change it if you want
-		- Displays a form to fill in FTP Host, FTP User, FTP Password, SSL?  
+		- Displays a form to fill in FTP Host, FTP User, FTP Password, SSL?
 		  If properly filled in, you will be able to use one touch installs and updates
 		- Displays a form to set a Memory Limit
 		- Deletes the tar ball of the install package
@@ -41,41 +43,41 @@
 		- Deletes readme.html, because it's silly to have
 		- Creates .htaccess file and makes it writable to the user (664)
 		- Forwards to instal.php
-	
-	
-	
-	Based on:	
-	EasyWP WordPress Installer v1.2          
-	Copyright ©2008 - 2010 Michael VanDeMar  
-	http://www.funscripts.net/               
-	All rights reserved.                     
+
+
+
+	Based on:
+	EasyWP WordPress Installer v1.2
+	Copyright ©2008 - 2010 Michael VanDeMar
+	http://www.funscripts.net/
+	All rights reserved.
 
 ///////////////////////////////////////////////////////////////////////////*/
 
 // .htaccess stuff that is added later.
 // Just here to make it easy to find and edit.
-$htaccess_stuff = 
+$htaccess_stuff =
 "";
-$htaccess_stuff .= 
+$htaccess_stuff .=
 "# Block/Allow access to wp-login.php\n
 # Just toggle allow/deny from all\n
 <files wp-login.php>\n
 order allow,deny\n
 allow from all\n
 </files>\n\n";
-$htaccess_stuff .= 
+$htaccess_stuff .=
 "# Don't let anyone access wp-config\n
 <Files wp-config.php>\n
 order allow,deny\n
 deny from all\n
 </Files>\n\n";
-$htaccess_stuff .= 
-"# Don't let anyone access htaccess\n					
+$htaccess_stuff .=
+"# Don't let anyone access htaccess\n
 <Files .htaccess>\n
 order allow,deny\n
 deny from all\n
 </Files>\n\n";
-$htaccess_stuff .= 
+$htaccess_stuff .=
 "# Block the include-only files.\n
 <IfModule mod_rewrite.c>\n
 RewriteEngine On\n
@@ -85,10 +87,10 @@ RewriteRule !^wp-includes/ - [S=3]\n
 RewriteRule ^wp-includes/[^/]+\.php$ - [F,L]\n
 RewriteRule ^wp-includes/js/tinymce/langs/.+\.php - [F,L]\n
 RewriteRule ^wp-includes/theme-compat/ - [F,L]\n
-</IfModule>\n\n";				
-$htaccess_stuff .= 
+</IfModule>\n\n";
+$htaccess_stuff .=
 "# Turn off Directory Browsing\n
-Options All -Indexes\n\n";					
+Options All -Indexes\n\n";
 
 function get_plugins($plugin_array) { // Take an array of plugin name slugs and download them from WP
     foreach($plugin_array as $plugin)
@@ -102,7 +104,7 @@ function unzip_plugins($plugin_array) { // Unzip the plugins we downloaded
     foreach($plugin_array as $plugin)
         {
 			exec("unzip wp-content/plugins/". $plugin .".zip -d wp-content/plugins/");
-			unlink("wp-content/plugins/". $plugin .".zip"); 
+			unlink("wp-content/plugins/". $plugin .".zip");
 		}
 }
 
@@ -124,12 +126,12 @@ function rand_prefix() { // Random DB Prefix
 function getLatestWP(){
 	echo "<h3>Downloading file..</h3><br />";
 
-	$remote_file_contents = file_get_contents('https://wordpress.org/latest.tar.gz');
+	$remote_file_contents = file_get_contents('https://wordpress.org/latest.zip');
 	//Get the contents
-	
+
 	$local_file_path = '';
-	
-	file_put_contents("wordpress.tar.gz", $remote_file_contents);
+
+	file_put_contents("wordpress.zip", $remote_file_contents);
 	//save the contents of the remote file} // End Get Latest WP
 }
 
@@ -143,21 +145,22 @@ if(isset($_POST["process"]) && $_POST["process"]=="true")
 		// If we can't connect to the db, show an error.
 		if(!isset($_POST["doanyways"]) && @mysql_connect($_POST["DB_HOST"], $_POST["DB_USER"], $_POST["DB_PASSWORD"])===FALSE)
 			{ die("<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>
-					<h3 align='center'>Couldn't connect to the database.<br />Please go back and check your DB settings.</h3>"); } 
-		else 
+					<h3 align='center'>Couldn't connect to the database.<br />Please go back and check your DB settings.</h3>"); }
+		else
 			{
 				// We connected to the db, so unzip the tar ball and move files around.
-				exec("tar xvfz ".$_POST["wpfile"], $buff);
+				//exec("tar xvfz ".$_POST["wpfile"], $buff);
+				exec("unzip wordpress.zip");
 				exec("mv -f ".$dir."/wordpress/* ".$dir."", $buff2);
 				exec("rm -rf wordpress", $buff3);
-				
+
 				// Create wp-config.php
 				if(!file_exists(dirname(__FILE__)."/wp-config-sample.php"))
 					{ echo "Operation appears to have failed.<br />\n"; }
 				else
 					{
 						$config = file_get_contents(dirname(__FILE__)."/wp-config-sample.php");
-			
+
 						// pre-3.0 replacements
 						$config = str_replace("putyourdbnamehere", $_POST["DB_NAME"], $config);
 						$config = str_replace("usernamehere", $_POST["DB_USER"], $config);
@@ -168,7 +171,7 @@ if(isset($_POST["process"]) && $_POST["process"]=="true")
 						$config = str_replace("'SECURE_AUTH_KEY', 'put your unique phrase here'", "'SECURE_AUTH_KEY', '".$_POST["SECURE_AUTH_KEY"]."'", $config);
 						$config = str_replace("'LOGGED_IN_KEY', 'put your unique phrase here'", "'LOGGED_IN_KEY', '".$_POST["LOGGED_IN_KEY"]."'", $config);
 						$config = str_replace("'NONCE_KEY', 'put your unique phrase here'", "'NONCE_KEY', '".$_POST["NONCE_KEY"]."'", $config);
-			
+
 						// 3.0 replacements
 						$config = str_replace("database_name_here", $_POST["DB_NAME"], $config);
 						$config = str_replace("username_here", $_POST["DB_USER"], $config);
@@ -182,66 +185,66 @@ if(isset($_POST["process"]) && $_POST["process"]=="true")
 						$config = str_replace("'SECURE_AUTH_SALT', 'put your unique phrase here'", "'SECURE_AUTH_SALT', '".$_POST["SECURE_AUTH_SALT"]."'", $config);
 						$config = str_replace("'LOGGED_IN_SALT',   'put your unique phrase here'", "'LOGGED_IN_SALT',   '".$_POST["LOGGED_IN_SALT"]."'", $config);
 						$config = str_replace("'NONCE_SALT',       'put your unique phrase here'", "'NONCE_SALT',       '".$_POST["NONCE_SALT"]."'", $config);
-			
+
 						// Auto Update FTP Information
 						$config = str_replace("/**#@-*/",
 											  "/**#@-*/ \n\n\n
 											  // Auto Update FTP Information
-											  define('FTP_USER', '".$_POST["ftp_user"]."'); 
-											  define('FTP_PASS', '".$_POST["ftp_pass"]."'); 
+											  define('FTP_USER', '".$_POST["ftp_user"]."');
+											  define('FTP_PASS', '".$_POST["ftp_pass"]."');
 											  define('FTP_HOST', '".$_POST["ftp_domain"]."');
 											  define('FTP_SSL', ".$_POST["ftp_ssl"]."); \n
-												
+
 											  // Set WP Memory Limit for PHP
 											  define('WP_MEMORY_LIMIT', ".$_POST["memory_limit"]."); \n\n
-											  
+
 											  // Disable File Editing from Dashboard
 											  define('DISALLOW_FILE_EDIT', true);\n\n\n
 						", $config);
-						
-						
-						
-						
+
+
+
+
 						if(substr($_POST["table_prefix"], strlen($_POST["table_prefix"])-1)=="_")
 							{ $config = str_replace("\$table_prefix  = 'wp_';", "\$table_prefix  = '".$_POST["table_prefix"]."';", $config); }
 						else
 							{ $config = str_replace("\$table_prefix  = 'wp_';", "\$table_prefix  = '".$_POST["table_prefix"]."_';", $config); }
-						
+
 						$fp = fopen(dirname(__FILE__)."/wp-config-sample.php", "w+");
 						fwrite($fp, $config);
 						fclose($fp);
 					}
-		
+
 				rename(dirname(__FILE__)."/wp-config-sample.php", dirname(__FILE__)."/wp-config.php");
 				exec("rm -f 1-click-wp.php", $buff3);
 				//exec("rm -f license.txt", $buff3);
 				//exec("rm -f readme.html", $buff3);
-				
+
 				// Make a .htaccess file
 				exec("touch .htaccess");
 				exec("chmod 644 .htaccess");
 				$hta = fopen(dirname(__FILE__)."/.htaccess", "w+");
 				fwrite($hta, $htaccess_stuff);
 				fclose($hta);
-				
+
 				// Make an uploads folder
 				exec("mkdir wp-content/uploads");
 				exec("chmod 755 wp-content/uploads");
-				
+
 				// Fix permissions on the Plugins folder
 				exec("chmod 755 wp-content/plugins");
-				
+
 				// Delete the downloaded WP file
 				exec("rm -f *.tar.gz");
-				
+
 				// Get the plugins
 				get_plugins($plugins_group);
-				
+
 				// Unzip the plugins
 				unzip_plugins($plugins_group);
-				
+
 				header("Location: wp-admin/install.php");
-				
+
 				die();
 				//echo "Done.";
 			}
@@ -255,16 +258,16 @@ else
 				echo "This utility is designed for clean installs only.<br />";
 				die();
 			}
-	
+
 		if(is_writable($dir)===false)
 			{
 				echo "It does not appear that the current directory is writable.<br />\n";
 				echo "Please correct and re-run this script.<br />\n";
 				die();
 			}
-	
+
 		$availfiles = array();
-	
+
 		if($dh = opendir($dir))
 			{
 				while(($file = readdir($dh)) !== false)
@@ -277,7 +280,7 @@ else
 					}
 				closedir($dh);
 			}
-	
+
 		if(count($availfiles)==0)
 			{
 				$availfiles[] = getLatestWP();
@@ -318,7 +321,7 @@ else
                         box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
                     }
                     form input {
-                        margin-top: 0px;	
+                        margin-top: 0px;
                     }
                     H2 {
                         font-family: Verdana;
@@ -327,7 +330,7 @@ else
                     }
                     small {
                         color: #777;
-                        font-size: 10px;	
+                        font-size: 10px;
                     }
                     input {
                         width:50%;
@@ -357,15 +360,15 @@ else
                         background:#ddd;
                         color:#09C;
                     }
-					input.checkbox { 
-						display: inline; 
+					input.checkbox {
+						display: inline;
 						width: 25px;
 						/* kill the shadow around the check boxes */
                         -webkit-box-shadow: 0px 0px  px rgba(0, 0, 0, 0.3);
                         -moz-box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.3);
                         box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.3);
 					}
-                    
+
                 </style>
 			</head>
             <body>
@@ -373,50 +376,50 @@ else
             <form action="<? echo $PHP_SELF; ?>" method="post">
             <input type="hidden" name="process" value="true">
             <input type="hidden" name="wpfile" value="<?php echo $availfiles[0]; ?>">
-            
+
             DB Name: <small>(<em>database must already exist</em>)</small><br />
             <input type="text" name="DB_NAME" size="25" value="<?php echo $db_name; ?>"><br />
-            
+
             MySQL username <small>(<em>must be a valid user for the database above</em>)</small>:<br />
             <input type="text" name="DB_USER" size="25" value="<?php echo $db_user; ?>"><br />
-            
+
             MySQL password <small>(<em>this is the password for the database user above</em>)</small>:<br >
             <input type="text" name="DB_PASSWORD" size="25" value="<?php echo $db_password; ?>"><br />
-            
+
             DB Host <small>(99% chance you won't need to change this value)</small>:<br />
             <input type="text" name="DB_HOST" value="localhost" size="25"><br />
-            
+
             <!-- Secret Salts WP.  No reason to see them. -->
             <input type="hidden" name="SECRET_KEY" value="<?php echo $secret_key; ?>">
             <input type="hidden" name="AUTH_KEY" value="<?php echo $auth_key; ?>">
-            <input type="hidden" name="SECURE_AUTH_KEY" value="<?php echo $secure_auth_key; ?>"> 
-            <input type="hidden" name="LOGGED_IN_KEY" value="<?php echo $logged_in_key; ?>"> 
-            <input type="hidden" name="NONCE_KEY" value="<?php echo $nonce_key; ?>"> 
-            <input type="hidden" name="AUTH_SALT" value="<?php echo $auth_salt; ?>"> 
-            <input type="hidden" name="SECURE_AUTH_SALT" value="<?php echo $secure_auth_salt; ?>"> 
-            <input type="hidden" name="LOGGED_IN_SALT" value="<?php echo $logged_in_salt; ?>"> 
-            <input type="hidden" name="NONCE_SALT" value="<?php echo $nonce_salt; ?>"> 
-            
+            <input type="hidden" name="SECURE_AUTH_KEY" value="<?php echo $secure_auth_key; ?>">
+            <input type="hidden" name="LOGGED_IN_KEY" value="<?php echo $logged_in_key; ?>">
+            <input type="hidden" name="NONCE_KEY" value="<?php echo $nonce_key; ?>">
+            <input type="hidden" name="AUTH_SALT" value="<?php echo $auth_salt; ?>">
+            <input type="hidden" name="SECURE_AUTH_SALT" value="<?php echo $secure_auth_salt; ?>">
+            <input type="hidden" name="LOGGED_IN_SALT" value="<?php echo $logged_in_salt; ?>">
+            <input type="hidden" name="NONCE_SALT" value="<?php echo $nonce_salt; ?>">
+
             DB prefix <small>(wp_ is the default, but it's not secure)</small>:<br />
             <input type="text" name="table_prefix" value="<?php echo rand_prefix(); ?>" size="25"> <small>(Only numbers, letters, and underscores please!)</small><br />
-            
+
             <br /><hr /><br />
-            
+
             FTP Domain <br />
             <input type="text" name="ftp_domain" value="fotan.us" size="25"> <br />
-            
+
             FTP User <br />
             <input type="text" name="ftp_user" value="ftp user" size="25"> <br />
-            
+
             FTP Password <br />
             <input type="text" name="ftp_pass" value="ftp pass" size="25"> <br />
-            
+
             FTP SSL <small>(true / false)</small> <br />
             <input type="text" name="ftp_ssl" value="true" size="25"> <br />
-            
+
             Memory Limit <small>Numbers Only!</small>  <br />
             <input type="text" name="memory_limit" value="128" size="25"> <small>(128k is good for most servers)</small><br />
-            
+
             <br /><hr /><br />
             Include Plugins<br />
             <input class='checkbox' type="checkbox" name="plugins_group[]" value="admin-management-xtended">Admin Management Xtended<br />
@@ -424,20 +427,20 @@ else
             <input class='checkbox' type="checkbox" name="plugins_group[]" value="backwpup" />Back WP Up<br />
             <input class='checkbox' type="checkbox" name="plugins_group[]" value="configure-smtp" />Configure SMTP<br />
             <input class='checkbox' type="checkbox" name="plugins_group[]" value="simple-custom-css" />Custom CSS<br />
-            <input class='checkbox' type="checkbox" name="plugins_group[]" value="exclude-pages" />Exclude Pages From Navigation<br /> 
-            <input class='checkbox' type="checkbox" name="plugins_group[]" value="google-sitemap-generator" />Google XML Sitemaps<br /> 
-            <input class='checkbox' type="checkbox" name="plugins_group[]" value="limit-login-attempts" />Limit Login Attempts<br /> 
-            <input class='checkbox' type="checkbox" name="plugins_group[]" value="page-links-to" />Page Links To<br /> 
-            <input class='checkbox' type="checkbox" name="plugins_group[]" value="simple-page-ordering" />Simple Page Ordering<br /> 
+            <input class='checkbox' type="checkbox" name="plugins_group[]" value="exclude-pages" />Exclude Pages From Navigation<br />
+            <input class='checkbox' type="checkbox" name="plugins_group[]" value="google-sitemap-generator" />Google XML Sitemaps<br />
+            <input class='checkbox' type="checkbox" name="plugins_group[]" value="limit-login-attempts" />Limit Login Attempts<br />
+            <input class='checkbox' type="checkbox" name="plugins_group[]" value="page-links-to" />Page Links To<br />
+            <input class='checkbox' type="checkbox" name="plugins_group[]" value="simple-page-ordering" />Simple Page Ordering<br />
             <input class='checkbox' type="checkbox" name="plugins_group[]" value="tinymce-advanced" />TinyMCE Advanced<br />
-            <input class='checkbox' type="checkbox" name="plugins_group[]" value="velvet-blues-update-urls" />Velvet Blues URL Changer<br /> 
-            <input class='checkbox' type="checkbox" name="plugins_group[]" value="wp-blackcheck" />WP-BlackCheck<br /> 
-            <input class='checkbox' type="checkbox" name="plugins_group[]" value="wp-slimstat" />WP SlimStat<br /> 
+            <input class='checkbox' type="checkbox" name="plugins_group[]" value="velvet-blues-update-urls" />Velvet Blues URL Changer<br />
+            <input class='checkbox' type="checkbox" name="plugins_group[]" value="wp-blackcheck" />WP-BlackCheck<br />
+            <input class='checkbox' type="checkbox" name="plugins_group[]" value="wp-slimstat" />WP SlimStat<br />
             <br /><br />
 
-            
+
             <input type="submit" class="button" value="Submit">
-            
+
             </form>
             </body>
         </html>
