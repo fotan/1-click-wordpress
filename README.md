@@ -21,8 +21,8 @@ A &lt; 20kb file that installs WordPress and it's zillion files, plus sets up yo
 
 	v1.2.5 (11/6/15)
         - Changed download to cURL and turned it into a function so it can be used for WP core as well
-            as plugins.
-        - Changed the download of WP core to .zip from .tar.gz
+            other things that need to be downloaded later.
+        - Changed the download of WP core to .zip from .tar.gz (I guess this actually happened in v1.2.4)
         - Changed some of the exec functions to PHP functions
         - Added better comments to the functions
         - Removed the plugins install stuff.  Seems better to just install plugins on a site by site basis.
@@ -60,7 +60,7 @@ A &lt; 20kb file that installs WordPress and it's zillion files, plus sets up yo
 		- Deletes license.txt, because it's silly to have
 		- Deletes readme.html, because it's silly to have
 		- Creates .htaccess file and makes it writable to the user (664)
-		- Forwards to instal.php
+		- Forwards to install.php
 
 
 
