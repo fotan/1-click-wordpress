@@ -11,7 +11,6 @@ A &lt; 20kb file that installs WordPress and it's zillion files, plus sets up yo
  - Upload 1-click-wp.php to the folder you want WordPress to live in.
  - Browse to http://www.whateveryourdomainis.com/1-click-wp.php
  - Fill in the form
- - Pick any plugins you want to be installed along with WordPress
  - Hit the Submit button
  - Wait about 10 seconds and fill in the WordPress "Install" screen like normal.
 
@@ -26,7 +25,7 @@ A &lt; 20kb file that installs WordPress and it's zillion files, plus sets up yo
         - Changed the download of WP core to .zip from .tar.gz
         - Changed some of the exec functions to PHP functions
         - Added better comments to the functions
-        - Got rid of the plugins install stuff.  Seems better to just install plugins on a site by site basis.
+        - Removed the plugins install stuff.  Seems better to just install plugins on a site by site basis.
     v1.2.4 (2/8/15)
 		- Changed from the .tar.gz version of WordPress to the .zip version
     v1.2.3 (1/23/15)
