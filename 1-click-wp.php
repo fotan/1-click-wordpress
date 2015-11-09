@@ -5,13 +5,15 @@
 	One-Click WordPress Installer
 	By Fotan (www.fotan.net)
 
-	v1.2.4 (11/6/15)
+	v1.2.5 (11/6/15)
 		- Changed download to cURL and turned it into a function so it can be used for WP core as well
 			as plugins.
 		- Changed the download of WP core to .zip from .tar.gz
 		- Changed some of the exec functions to PHP functions
 		- Added better comments to the functions
 		- Got rid of the plugins install stuff.  Seems better to just install plugins on a site by site basis.
+	v1.2.4 2/8/15)
+		- Changed from the .tar.gz version of WordPress to the .zip version
 	v1.2.3 (1/23/15)
 		- Fixed the WordPress download function.  The original one stopped working with a 302 error.
 			Decided to make it a little more simple and just used file_get_contents / file_put_contents
