@@ -3,6 +3,12 @@ By Fotan (www.fotan.net)
 
 =================
 
+PLUGIN ABANDONED!
+Wordpress pretty much does what this plugin did on its own now, so there's no reason to keep updating it...
+
+
+=================
+
 A &lt; 20kb file that installs WordPress and it's zillion files, plus sets up your wp-config and downloads plugins and cleans up after itself.  Saves a ton of time.
 
 ** USE **
